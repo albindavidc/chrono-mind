@@ -1,0 +1,119 @@
+
+import React, { useState, useEffect, useRef } from 'react';
+import Tabs from './components/Tabs';
+import TimerView from './components/TimerView';
+import StopwatchView from './components/StopwatchView';
+import SequenceView from './components/SequenceView';
+import SettingsView from './components/SettingsView';
+import { Tab, SoundId } from './types';
+
+const TABS: Tab[] = ['timer', 'sequence', 'stopwatch', 'settings'];
+
+const App: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<Tab>('timer');
+  
+  // Sound Preference State (Default: 'ethereal')
+  const [selectedSound, setSelectedSound] = useState<SoundId>(() => {
+    const saved = localStorage.getItem('chronos_sound');
+    return (saved as SoundId) || 'ethereal';
+  });
+
+  const handleSoundChange = (id: SoundId) => {
+    setSelectedSound(id);
+    localStorage.setItem('chronos_sound', id);
+  };
+
+  // --- Swipe Logic ---
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    
+    const deltaX = touchStartX.current - touchEndX;
+    const deltaY = touchStartY.current - touchEndY;
+
+    // Basic swipe thresholds
+    const minSwipeDistance = 50;
+    
+    // Ensure horizontal swipe is dominant (X > Y) to avoid switching while scrolling vertically
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+      const currentIndex = TABS.indexOf(activeTab);
+      
+      if (deltaX > 0) {
+        // Swipe Left -> Next Tab
+        if (currentIndex < TABS.length - 1) {
+             setActiveTab(TABS[currentIndex + 1]);
+        }
+      } else {
+        // Swipe Right -> Prev Tab
+        if (currentIndex > 0) {
+             setActiveTab(TABS[currentIndex - 1]);
+        }
+      }
+    }
+    
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
+  return (
+    <div 
+      className="h-[100dvh] bg-black text-white flex flex-col font-sans selection:bg-gray-800 overflow-hidden relative animate-in fade-in duration-700"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      
+      {/* Ambient Background Orbs for Glass Effect */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/20 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-900/20 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-orange-900/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+      {/* Header */}
+      <header className="px-6 py-4 shrink-0 flex items-center justify-between z-10">
+        <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-white/80 shadow-[0_0_8px_rgba(255,255,255,0.8)]"></div>
+            <h1 className="text-lg font-bold tracking-wider text-white/90 font-mono">
+            CHRONO<span className="text-white/50">MIND</span>
+            </h1>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="flex-1 w-full max-w-lg mx-auto p-4 pb-24 relative flex flex-col min-h-0 z-10">
+        {activeTab === 'timer' && (
+           <TimerView soundId={selectedSound} />
+        )}
+
+        {activeTab === 'sequence' && (
+           <SequenceView soundId={selectedSound} />
+        )}
+        
+        {activeTab === 'stopwatch' && (
+           <StopwatchView />
+        )}
+
+        {activeTab === 'settings' && (
+           <SettingsView currentSound={selectedSound} onSoundChange={handleSoundChange} />
+        )}
+      </main>
+
+      {/* Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-50 pointer-events-none bg-gradient-to-t from-black via-black/80 to-transparent">
+        <div className="pointer-events-auto">
+          <Tabs activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
