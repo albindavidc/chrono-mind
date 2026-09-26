@@ -80,8 +80,8 @@ const App: React.FC = () => {
       <div className="h-[100dvh] bg-black flex items-center justify-center animate-out fade-out duration-1000 cursor-default select-none">
         {/* Minimalist, Small, Elegant Loader */}
         <div className="flex flex-col items-center gap-4">
-          <h1 className="text-xl md:text-2xl font-light tracking-[0.5em] text-white/90 font-mono animate-pulse">
-            CHRONOMIND
+          <h1 className="text-xl md:text-2xl font-light tracking-[0.5em] font-mono animate-pulse">
+            <span className="text-white/90">CHRONO</span><span className="text-white/50">MIND</span>
           </h1>
         </div>
       </div>
