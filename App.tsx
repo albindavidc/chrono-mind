@@ -11,6 +11,7 @@ const TABS: Tab[] = ['timer', 'sequence', 'stopwatch', 'settings'];
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('timer');
+  const [isLoading, setIsLoading] = useState(true);
   
   // Sound Preference State (Default: 'ethereal')
   const [selectedSound, setSelectedSound] = useState<SoundId>(() => {
@@ -22,6 +23,15 @@ const App: React.FC = () => {
     setSelectedSound(id);
     localStorage.setItem('chronos_sound', id);
   };
+
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
 
   // --- Swipe Logic ---
   const touchStartX = useRef<number | null>(null);
@@ -64,6 +74,19 @@ const App: React.FC = () => {
     touchStartX.current = null;
     touchStartY.current = null;
   };
+
+  if (isLoading) {
+    return (
+      <div className="h-[100dvh] bg-black flex items-center justify-center animate-out fade-out duration-1000 cursor-default select-none">
+        {/* Minimalist, Small, Elegant Loader */}
+        <div className="flex flex-col items-center gap-4">
+          <h1 className="text-xl md:text-2xl font-light tracking-[0.5em] text-white/90 font-mono animate-pulse">
+            CHRONOMIND
+          </h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 

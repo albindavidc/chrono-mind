@@ -333,7 +333,7 @@ const SequenceView: React.FC<SequenceViewProps> = ({ soundId }) => {
 
             <CircularProgress progress={progress} color="text-white/90">
                 <div className={`font-mono font-bold tracking-tight text-white drop-shadow-2xl tabular-nums select-none transition-all ${
-                    timeLeft >= 3600 ? 'text-3xl sm:text-4xl' : 'text-4xl sm:text-5xl'
+                    timeLeft >= 3600 ? 'text-4xl sm:text-5xl' : 'text-5xl sm:text-6xl'
                 }`}>
                     {formatTime(timeLeft)}
                 </div>

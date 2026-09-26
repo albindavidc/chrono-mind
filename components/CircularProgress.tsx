@@ -52,8 +52,8 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
           cy={size / 2}
         />
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4">
-        <div className="pointer-events-auto flex flex-col items-center justify-center max-w-[80%] text-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-2 sm:p-4">
+        <div className="pointer-events-auto flex flex-col items-center justify-center max-w-[85%] text-center">
           {children}
         </div>
       </div>
